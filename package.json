@@ -1,0 +1,11 @@
+{
+  "name": "cursive-runtime",
+  "version": "1.0.0",
+  "description": "JS runtime for the Cursive Scripting system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
