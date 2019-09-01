@@ -16,6 +16,4 @@ export class DebugCallStack extends CallStack {
 
         await super.push(frame);
     }
-
-    // TODO: 
 }

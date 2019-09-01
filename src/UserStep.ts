@@ -13,6 +13,8 @@ export class UserStep extends ReturningStep {
     public readonly returnPaths = new Map<string, Step>();
 
     public async run(stack: CallStack) {
+        const variables = stack.currentVariables.values;
+
         // TODO: content
     }
 }

@@ -12,4 +12,14 @@ export class ValueSet {
     public set<TValue>(param: TypedParameter<TValue>, value: TValue) {
         this.values.set(param.name, value);
     }
+
+    public static create<TElement, TValue>(elements: TElement[], getKey: (el: TElement) => string, getValue: (el: TElement) => TValue) {
+        const map = new Map<string, TValue>();
+
+        for (const element of elements) {
+            map.set(getKey(element), getValue(element));
+        }
+
+        return new ValueSet(map);
+    }
 }
