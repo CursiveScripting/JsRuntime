@@ -4,7 +4,7 @@ import { SystemProcess } from './SystemProcess';
 import { UserProcess } from './UserProcess';
 
 export class Workspace {
-    typesByName: DataType[] = [];
+    types: DataType[] = [];
     requiredProcesses: RequiredProcess[] = [];
     systemProcesses: SystemProcess[] = [];
     userProcesses: UserProcess[] = [];
