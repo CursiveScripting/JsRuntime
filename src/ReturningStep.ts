@@ -1,6 +1,6 @@
 import { Step } from './Step';
 
-export class ReturningStep extends Step {
+export abstract class ReturningStep extends Step {
     constructor(id: string) {
         super(id);
     }

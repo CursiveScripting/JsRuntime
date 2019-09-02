@@ -13,8 +13,8 @@ export class StartStep extends ReturningStep {
     public run(stack: CallStack, inputs: ValueSet) {
         const variables = stack.currentVariables.values;
 
-        for (const [name, var] of this.outputMapping) {
-            variables.set(var.name, inputs.get(name));
+        for (const [name, variable] of this.outputMapping) {
+            variables.set(variable.name, inputs.values.get(name));
         }
 
         return this.defaultReturnPath;

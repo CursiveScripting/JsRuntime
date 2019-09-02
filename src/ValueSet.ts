@@ -13,7 +13,7 @@ export class ValueSet {
         this.values.set(param.name, value);
     }
 
-    public static create<TElement, TValue>(elements: TElement[], getKey: (el: TElement) => string, getValue: (el: TElement) => TValue) {
+    public static createFromArray<TElement, TValue>(elements: TElement[], getKey: (el: TElement) => string, getValue: (el: TElement) => TValue) {
         const map = new Map<string, TValue>();
 
         for (const element of elements) {
@@ -21,5 +21,15 @@ export class ValueSet {
         }
 
         return new ValueSet(map);
+    }
+
+    public static createFromMap<TElement, TValue>(map: Map<string, TElement>, getValue: (el: TElement) => TValue) {
+        const resultMap = new Map<string, TValue>();
+
+        for (const [key, value] of map) {
+            resultMap.set(key, getValue(value));
+        }
+
+        return new ValueSet(resultMap);
     }
 }

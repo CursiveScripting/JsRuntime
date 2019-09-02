@@ -15,7 +15,7 @@ export class RequiredProcess extends Process {
         public readonly outputs: Parameter[],
         public readonly returnPaths: string[]
     ) {
-        super(name, description, folder, inputs, outputs, returnPaths);
+        super(name, description, folder, inputs, outputs, returnPaths, true);
     }
 
     implementation: UserProcess;

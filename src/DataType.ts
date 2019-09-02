@@ -11,13 +11,7 @@ export abstract class DataType {
 
     }
 
-    public abstract systemType: string; // TODO: something more useful here?
-
     abstract getDefaultValue(): any;
-
-    protected static getTypeDefault(type: string): any {
-        // TODO: something
-    }
 
     public isAssignableTo(destinationType: DataType) {
         let test: DataType | null = this;
@@ -34,26 +28,55 @@ export abstract class DataType {
     }
 }
 
-
-// TODO: extending types
-
 export class TypedDataType<T> extends DataType {
     constructor(
         public readonly name: string,
         public readonly color: ColorString,
-        public readonly extendsType: DataType | null,
-        public readonly getDefault: null | (() => T),
+        public readonly extendsType: DataType | null = null,
+        private readonly getDefault: null | (() => T) = null,
         public readonly validation?: RegExp,
         public readonly guidance?: string
     ) {
         super(name, color, extendsType, validation, guidance);
     }
 
-    public readonly systemType = 'TODO'; // TODO: something
-
     public getDefaultValue() {
-        if (this.getDefault !== undefined) {
-            return this.getDefault();
-        }
+        return this.getDefault === undefined
+            ? undefined
+            : this.getDefault();
+    }
+}
+
+export interface IDeserializable {
+    deserialize(value: string): any;
+}
+
+
+export class FixedType<T> extends TypedDataType<T> implements IDeserializable {
+    constructor(
+        name: string,
+        color: ColorString,
+        public readonly deserialize: (value: string) => T,
+        extendsType: DataType | null = null,
+        getDefault: null | (() => T) = null,
+        validation?: RegExp,
+        guidance?: string
+    ) {
+        super(name, color, extendsType, getDefault, validation, guidance);
+    }
+}
+
+export class LookupType extends TypedDataType<string> implements IDeserializable {
+    constructor(
+        name: string,
+        color: ColorString,
+        public readonly options: string[],
+        guidance?: string
+    ) {
+        super(name, color, null, null, undefined, guidance);
+    }
+
+    public deserialize(value: string) {
+        return value;
     }
 }

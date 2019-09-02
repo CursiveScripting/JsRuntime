@@ -1,6 +1,6 @@
 import { ValueSet } from './ValueSet';
 
 export interface IProcessResult {
-    returnPath: string;
+    returnPath: string | null;
     outputs: ValueSet | null;
 }

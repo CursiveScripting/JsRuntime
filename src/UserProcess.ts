@@ -19,13 +19,15 @@ export class UserProcess extends Process {
         public readonly returnPaths: string[],
         readonly variables: Variable[]
     ) {
-        super(name, description, folder, inputs, outputs, returnPaths);
+        super(name, description, folder, inputs, outputs, returnPaths, true);
     }
+
+    public readonly processType = 'user';
 
     public firstStep: StartStep;
 
     public async run(inputs: ValueSet, stack: CallStack) {
-        const variableValues = ValueSet.create(this.variables, v => v.name, v => v.initialValue);
+        const variableValues = ValueSet.createFromArray(this.variables, v => v.name, v => v.initialValue);
 
         let currentStep: Step | null = await this.runStartStep(inputs, stack, variableValues);
 

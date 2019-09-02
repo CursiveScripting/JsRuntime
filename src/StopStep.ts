@@ -12,7 +12,7 @@ export class StopStep extends Step {
     public run(stack: CallStack) {
         const variables = stack.currentVariables.values;
 
-        const outputs = ValueSet.create(this.inputMapping, m => m.key, m => variables.get(m.value.name));
+        const outputs = ValueSet.createFromMap(this.inputMapping, v => variables.get(v.name));
 
         return outputs;
     }

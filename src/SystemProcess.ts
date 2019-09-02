@@ -14,12 +14,12 @@ export class SystemProcess extends Process {
         public readonly outputs: Parameter[],
         public readonly returnPaths: string[]
     ) {
-        super(name, description, folder, inputs, outputs, returnPaths);
+        super(name, description, folder, inputs, outputs, returnPaths, false);
     }
 
     public async run(inputs: ValueSet, stack: CallStack) {
         try {
-            await this.operation(inputs);
+            return await this.operation(inputs);
         }
         catch (e) {
             throw new Error(`An error occurred running system process ${this.name}: ${e}`);
