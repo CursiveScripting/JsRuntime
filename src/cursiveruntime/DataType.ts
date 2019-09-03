@@ -4,6 +4,7 @@ export abstract class DataType {
     constructor(
         public readonly name: string,
         public readonly color: ColorString,
+        public readonly isLookup: boolean,
         public readonly extendsType: DataType | null,
         public readonly validation?: RegExp,
         public readonly guidance?: string
@@ -32,12 +33,13 @@ export class TypedDataType<T> extends DataType {
     constructor(
         public readonly name: string,
         public readonly color: ColorString,
+        public readonly isLookup: boolean,
         public readonly extendsType: DataType | null = null,
         private readonly getDefault: null | (() => T) = null,
         public readonly validation?: RegExp,
         public readonly guidance?: string
     ) {
-        super(name, color, extendsType, validation, guidance);
+        super(name, color, isLookup, extendsType, validation, guidance);
     }
 
     public getDefaultValue() {
@@ -62,7 +64,7 @@ export class FixedType<T> extends TypedDataType<T> implements IDeserializable {
         validation?: RegExp,
         guidance?: string
     ) {
-        super(name, color, extendsType, getDefault, validation, guidance);
+        super(name, color, false, extendsType, getDefault, validation, guidance);
     }
 }
 
@@ -73,7 +75,7 @@ export class LookupType extends TypedDataType<string> implements IDeserializable
         public readonly options: string[],
         guidance?: string
     ) {
-        super(name, color, null, null, undefined, guidance);
+        super(name, color, true, null, null, undefined, guidance);
     }
 
     public deserialize(value: string) {
