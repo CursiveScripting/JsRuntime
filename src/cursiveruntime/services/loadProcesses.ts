@@ -42,49 +42,6 @@ export function loadProcesses(workspace: Workspace, processData: IUserProcessDat
     }
 
     return null;
-
-    /*
-    
-    for (const process of processData) {
-        var userProcess = new UserProcess(
-            process.name,
-            process.description === undefined ? '' : process.description,
-            process.folder === undefined ? null : process.folder,
-            process.inputs === undefined
-                ? []
-                : process.inputs.map(i => { return {
-
-                }}),
-            process.outputs === undefined
-                ? []
-                : process.outputs.map(o => { return {
-                    
-                }}),
-            process.returnPaths === undefined
-                ? []
-                : process.returnPaths.slice(),
-            process.variables === undefined
-                ? []
-                : process.variables.map(v => { return {
-
-                }}),
-        )
-
-        const steps = process.steps === undefined
-            ? []
-            : process.steps.map(s => {
-                return {
-
-                }
-            });
-
-        userProcess.firstStep = steps.find(s => s.type === 'start');
-
-        userProcesses.push(userProcess);
-    }
-
-    workspace.userProcesses = userProcesses;
-    */
 }
 
 function createProcesses(typesByName: Map<string, DataType>, processData: IUserProcessData[]): [ UserProcess[], string[] ] {
@@ -102,21 +59,77 @@ function createProcesses(typesByName: Map<string, DataType>, processData: IUserP
 
 function createProcess(processData: IUserProcessData, typesByName: Map<string, DataType>, errors: string[]) {
     // TODO: this
-    return {} as UserProcess;
+
+    const inputs = processData.inputs === undefined
+        ? []
+        : processData.inputs.map(i => { return {
+
+        }});
+    
+    const outputs = something;
+
+    const variables = something;
+
+    return new UserProcess(
+        processData.name,
+        processData.description === undefined ? '' : processData.description,
+        processData.folder === undefined ? null : processData.folder,
+        inputs,
+        outputs,
+        processData.returnPaths === undefined
+            ? []
+            : processData.returnPaths.slice(),
+        variables,
+    );
 }
 
 function getProcessesByName(workspace: Workspace, userProcesses: UserProcess[]): [Map<string, Process>, string[] | null] {
+    const errors = [];
+
+    if (!areNamesUnique(userProcesses.map(p => p.name), errors)) {
+        return [
+            new Map<string, Process>(),
+            errors
+        ];
+    }
+
     const processesByName = createMap<Process>(workspace.systemProcesses, p => p.name);
 
     for (const process of userProcesses) {
-        // TODO: check for name conflicts
-
-        processesByName.set(process.name, process);
+        if (processesByName.has(process.name)) {
+            errors.push(`Process name is already used by a system process: ${process.name}`);
+        }
+        else {
+            processesByName.set(process.name, process);
+        }
     }
 
-    const errors = [];
+    
+    if (errors.length > 0) {
+        return [
+            new Map<string, Process>(),
+            errors
+        ];
+    }
 
     return [ processesByName, errors ]
+}
+
+function areNamesUnique(names: string[], errors: string[]) {
+    const usedNames = new Set<string>();
+    let success = true;
+
+    for (const name of names) {
+        if (usedNames.has(name)) {
+            success = false;
+            errors.push(`Multiple processes have the name name: ${name}`);
+            continue;
+        }
+        
+        usedNames.add(name);
+    }
+
+    return success;
 }
 
 function loadSteps(processData: IUserProcessData[], processesByName: Map<string, Process>) {
@@ -124,7 +137,40 @@ function loadSteps(processData: IUserProcessData[], processesByName: Map<string,
     return [];
 }
 
-function applyProcessesToWorkspace(workspace: Workspace, userProcesses: UserProcess[]) {
-    // TODO: this
-    return [];
+function applyProcessesToWorkspace(workspace: Workspace, processes: UserProcess[]) {
+    clearUserProcesses(workspace);
+
+    for (const process of processes) {
+        workspace.userProcesses.push(process);
+    }
+
+    const errors: string[] = [];
+
+    for (const required of workspace.requiredProcesses) {
+        const implementations = processes.filter(p => p.name === required.name);
+
+        if (implementations.length === 0) {
+            errors.push(`No implementation of required process: ${required.name}`);
+        }
+        else if (implementations.length > 1) {
+            errors.push(`Multiple implementation of required process: ${required.name}`);
+        }
+        else {
+            required.implementation = implementations[0];
+        }
+    }
+
+    if (errors.length > 0) {
+        clearUserProcesses(workspace);
+        return errors;
+    }
+    
+    return null;
+}
+
+function clearUserProcesses(workspace: Workspace) {
+    for (const process of workspace.requiredProcesses)
+        process.implementation = null;
+
+    workspace.userProcesses.splice(0, workspace.userProcesses.length);
 }
