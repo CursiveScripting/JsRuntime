@@ -2,6 +2,8 @@ import { DataType } from './DataType';
 import { RequiredProcess } from './RequiredProcess';
 import { SystemProcess } from './SystemProcess';
 import { UserProcess } from './UserProcess';
+import { loadProcesses } from './services/loadProcesses';
+import { IUserProcessData } from './services/serializedDataModels';
 
 export class Workspace {
     types: DataType[] = [];
@@ -9,7 +11,11 @@ export class Workspace {
     systemProcesses: SystemProcess[] = [];
     userProcesses: UserProcess[] = [];
 
-    public loadUserProcesses(procsessJson: string) {
-        // TODO: this
+    public loadUserProcesses(processJson: string | IUserProcessData[], validateSchema: boolean = true) {
+        if (typeof processJson === 'string') {
+            processJson = JSON.parse(processJson) as IUserProcessData[];
+        }
+
+        return loadProcesses(this, processJson, validateSchema);
     }
 }
