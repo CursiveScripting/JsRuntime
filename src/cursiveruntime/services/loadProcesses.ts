@@ -1,5 +1,5 @@
 import processesSchema from 'cursive-schema/processes.json';
-import { IUserProcessData, IParameterData } from './serializedDataModels';
+import { IUserProcessData, IParameterData, IProcessStepData, IStartStepData, IStopStepData } from './serializedDataModels';
 import { validateSchema, createMap } from './DataFunctions';
 import { Workspace } from '../Workspace';
 import { UserProcess } from '../UserProcess';
@@ -7,6 +7,7 @@ import { DataType, isDeserializable } from '../DataType';
 import { Process } from '../Process';
 import { Parameter } from '../Parameter';
 import { Variable } from '../Variable';
+import { Step } from '../Step';
 
 export function loadProcesses(workspace: Workspace, processData: IUserProcessData[], checkSchema: boolean) {
     if (checkSchema) {
@@ -195,8 +196,71 @@ function areNamesUnique(names: string[], errors: string[]) {
 }
 
 function loadSteps(processData: IUserProcessData[], processesByName: Map<string, Process>) {
-    // TODO this
-    return [];
+    let errors = [];
+
+    for (const process of processData) {
+        const userProcess = processesByName.get(process.name) as UserProcess;
+
+        if (loadProcessSteps(userProcess, process.steps, processesByName, errors)) {
+            checkUnassignedVariables(userProcess, errors);
+        }
+    }
+
+    return errors.length > 0
+        ? errors
+        : null;
+}
+
+function loadProcessSteps(
+    process: UserProcess,
+    steps: Array<IStartStepData | IStopStepData | IProcessStepData>,
+    processesByName: Map<string, Process>,
+    errors: string[]
+) {
+    const stepsById = new Map<String, Step>();
+
+    const stepsWithInputs: Array<[IStopStepData | IProcessStepData, Step, Parameter[]]> = [];
+    const stepsWithOutputs: Array<[IStartStepData | IProcessStepData, Step, Parameter[]]> = [];
+    
+    const initialErrorCount = errors.length;
+
+    for (const step of steps) {
+        // TODO: this
+    }
+
+    const variablesByName = createMap(process.variables, v => v.name);
+
+    for (const [stepData, step, parameters] of stepsWithInputs) {
+        if (stepData.inputs !== undefined) {
+            mapParameters(stepData.inputs, step, parameters, variablesByName, process, true, errors);
+        }
+    }
+
+    for (const [stepData, step, parameters] of stepsWithOutputs) {
+        if (stepData.outputs !== undefined) {
+            mapParameters(stepData.outputs, step, parameters, variablesByName, process, false, errors);
+        }
+
+        // TODO: return paths
+    }
+
+    return errors.length === initialErrorCount;
+}
+
+function mapParameters(
+    paramData: Record<string, string>,
+    step: Step,
+    parameters: Parameter[],
+    variablesByName: Map<string, Variable>,
+    process: UserProcess,
+    isInputParam: boolean,
+    errors: string[]
+) {
+    // TODO: this
+}
+
+function checkUnassignedVariables(process: UserProcess, errors: string[]) {
+    // TODO: this
 }
 
 function applyProcessesToWorkspace(workspace: Workspace, processes: UserProcess[]) {
