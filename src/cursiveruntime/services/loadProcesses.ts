@@ -1,10 +1,12 @@
 import processesSchema from 'cursive-schema/processes.json';
-import { IUserProcessData } from './serializedDataModels';
+import { IUserProcessData, IParameterData } from './serializedDataModels';
 import { validateSchema, createMap } from './DataFunctions';
 import { Workspace } from '../Workspace';
 import { UserProcess } from '../UserProcess';
-import { DataType } from '../DataType';
+import { DataType, isDeserializable } from '../DataType';
 import { Process } from '../Process';
+import { Parameter } from '../Parameter';
+import { Variable } from '../Variable';
 
 export function loadProcesses(workspace: Workspace, processData: IUserProcessData[], checkSchema: boolean) {
     if (checkSchema) {
@@ -58,17 +60,11 @@ function createProcesses(typesByName: Map<string, DataType>, processData: IUserP
 }
 
 function createProcess(processData: IUserProcessData, typesByName: Map<string, DataType>, errors: string[]) {
-    // TODO: this
-
-    const inputs = processData.inputs === undefined
-        ? []
-        : processData.inputs.map(i => { return {
-
-        }});
+    const inputs = loadParameters(processData.inputs, typesByName, errors, processData, 'input');
     
-    const outputs = something;
+    const outputs = loadParameters(processData.outputs, typesByName, errors, processData, 'output');
 
-    const variables = something;
+    const variables = loadVariables(processData, typesByName, errors);
 
     return new UserProcess(
         processData.name,
@@ -81,6 +77,72 @@ function createProcess(processData: IUserProcessData, typesByName: Map<string, D
             : processData.returnPaths.slice(),
         variables,
     );
+}
+
+function loadParameters(
+    parameters: IParameterData[] | undefined,
+    typesByName: Map<string, DataType>,
+    errors: string[],
+    process: IUserProcessData,
+    paramType: string
+) {
+    if (parameters === undefined) {
+        return [];
+    }
+
+    const paramsWithTypes: [IParameterData, DataType | null][] = parameters.map(p => [
+        p,
+        typesByName.has(p.type)
+            ? typesByName.get(p.type)
+            : null
+    ]);
+
+    const errorParams = paramsWithTypes
+        .filter(p => p[1] === null)
+        .map(p => p[0]);
+    
+    for (const param of errorParams) {
+        errors.push(`Unrecognised type \"${param.type}\" used by ${paramType} of process ${process.name}`);
+    }
+
+    return paramsWithTypes.map(p => new Parameter(p[0].name, p[1]));
+}
+
+function loadVariables(
+    process: IUserProcessData,
+    typesByName: Map<string, DataType>,
+    errors: string[]
+) {
+    if (process.variables === undefined) {
+        return [];
+    }
+
+    const variables: Variable[] = [];
+
+    const usedNames = new Set<string>();
+
+    for (const variableData of process.variables) {
+        if (usedNames.has(variableData.name)) {
+            errors.push(`Multiple variables of process ${process.name} use the same name: ${variableData.name}`);
+            continue;
+        }
+
+        usedNames.add(variableData.name);
+
+        if (!typesByName.has(variableData.type)) {
+            errors.push(`Unrecognised type \"${variableData.type}\" used by variable ${variableData.name} of process ${process.name}`);
+            continue;
+        }
+
+        const dataType = typesByName.get(variableData.type);
+        const value = variableData.initialValue !== undefined && isDeserializable(dataType)
+            ? dataType.deserialize(variableData.initialValue)
+            : dataType.getDefaultValue();
+
+        variables.push(new Variable(variableData.name, dataType, value));
+    }
+
+    return variables;
 }
 
 function getProcessesByName(workspace: Workspace, userProcesses: UserProcess[]): [Map<string, Process>, string[] | null] {

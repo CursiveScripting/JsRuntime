@@ -27,6 +27,8 @@ export abstract class DataType {
 
         return false;
     }
+
+    public readonly deserializable: boolean = false;
 }
 
 export class TypedDataType<T> extends DataType {
@@ -51,6 +53,7 @@ export class TypedDataType<T> extends DataType {
 
 export interface IDeserializable {
     deserialize(value: string): any;
+    deserializable: true;
 }
 
 
@@ -66,6 +69,8 @@ export class FixedType<T> extends TypedDataType<T> implements IDeserializable {
     ) {
         super(name, color, false, extendsType, getDefault, validation, guidance);
     }
+
+    public readonly deserializable = true;
 }
 
 export class LookupType extends TypedDataType<string> implements IDeserializable {
@@ -81,4 +86,10 @@ export class LookupType extends TypedDataType<string> implements IDeserializable
     public deserialize(value: string) {
         return value;
     }
+
+    public readonly deserializable = true;
+}
+
+export function isDeserializable(type: DataType): type is IDeserializable & DataType {
+    return type.deserializable;
 }
