@@ -360,7 +360,56 @@ function mapParameters(
     isInputParam: boolean,
     errors: string[]
 ) {
-    // TODO: this
+    for (const paramName of Object.keys(paramData)) {
+        const parameter = parameters.find(p => p.name === paramName);
+        if (parameter === undefined) {
+            const paramType = isInputParam ? 'input' : 'output';
+            errors.push(`Step ${step.id} tries to map non-existent ${paramType} "${paramName}" in process "${process.name}"`);
+            continue;
+        }
+
+        const variableName = paramData[paramName];
+        const variable = variablesByName.get(variableName);
+
+        if (variable === undefined) {
+            const paramType = isInputParam ? 'input' : 'output';
+            errors.push(`Step ${step.id} tries to map an ${paramType} to non-existent variable "${variableName}" in process "${process.name}"`);
+            continue;
+        }
+
+        let fromType: DataType;
+        let toType: DataType;
+        let mapping: Map<string, Variable>;
+
+        if (isInputParam) {
+            fromType = variable.type;
+            toType = parameter.type;
+            mapping = step.inputMapping;
+        }
+        else {
+            fromType = parameter.type;
+            toType = variable.type;
+            mapping = step.outputMapping;
+        }
+
+        if (!fromType.isAssignableTo(toType)) {
+            const error = isInputParam
+                ? `Step ${step.id} tries to map the "${variableName}" variable to its "${paramName}" input, but their types are not compatible (${variable.type.name} and ${parameter.type.name}), in process "${process.name}"`
+                : `Step ${step.id} tries to map its "${paramName}" output to the "${variableName}" variable, but their types are not compatible (${parameter.type.name} and ${variable.type.name}), in process "${process.name}"`;
+            errors.push(error);
+            continue;
+        }
+
+        mapping.set(paramName, variable);
+    }
+
+    if (isInputParam) {
+        for (const param of parameters) {
+            if (!step.inputMapping.has(param.name)) {
+                errors.push(`Step ${step.id} fails to map "${param.name}" input parameter in process "${process.name}"`);
+            }
+        }
+    }
 }
 
 function checkUnassignedVariables(process: UserProcess, errors: string[]) {
