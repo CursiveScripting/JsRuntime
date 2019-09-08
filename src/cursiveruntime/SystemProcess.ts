@@ -17,7 +17,7 @@ export class SystemProcess extends Process {
         super(name, description, folder, inputs, outputs, returnPaths, false);
     }
 
-    public async run(inputs: ValueSet, stack: CallStack) {
+    public async run(inputs: ValueSet, stack?: CallStack) {
         try {
             return await this.operation(inputs);
         }

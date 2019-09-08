@@ -1,3 +1,7 @@
+import { IntegerWorkspace } from './IntegerWorkspace';
+
 test('sample test', () => {
-    expect(true).toBe(true);
+    const workspace = new IntegerWorkspace();
+
+    expect(workspace).toBeDefined();
 });
