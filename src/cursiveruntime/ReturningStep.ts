@@ -5,5 +5,5 @@ export abstract class ReturningStep extends Step {
         super(id);
     }
 
-    public defaultReturnPath: Step;
+    public defaultReturnPath?: Step;
 }

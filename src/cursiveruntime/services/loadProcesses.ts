@@ -413,7 +413,66 @@ function mapParameters(
 }
 
 function checkUnassignedVariables(process: UserProcess, errors: string[]) {
-    // TODO: this
+    const unassignedVariables = new Set<Variable>(
+        process.variables
+            .filter(v => v.initialValue === null)
+    );
+
+    const visitedSteps = new Set<Step>();
+
+    return checkUnassignedVariablesRecursive(process, process.firstStep, visitedSteps, unassignedVariables, errors);
+}
+
+function checkUnassignedVariablesRecursive(
+    process: UserProcess,
+    currentStep: ReturningStep,
+    visitedSteps: Set<Step>,
+    unassignedVariables: Set<Variable>,
+    errors: string[]
+) {
+    visitedSteps.add(currentStep);
+
+    unassignedVariables = new Set<Variable>(unassignedVariables);
+
+    // remove variables that currentStep's outputs connect to from the unassigned list
+    for (const variable of currentStep.outputMapping.values()) {
+        unassignedVariables.delete(variable);
+    }
+
+    let allValid = true;
+
+    let nextSteps: Step[];
+
+    if (currentStep.defaultReturnPath !== undefined) {
+        nextSteps = [ currentStep.defaultReturnPath ];
+    }
+    else if (isUserStep(currentStep)) {
+        nextSteps = Array.from(currentStep.returnPaths.values());
+    }
+    else {
+        errors.push(`Step ${currentStep.id} in process "${process.name}" has no return paths`);
+        return false;
+    }
+
+    for (const nextStep of nextSteps) {
+        if (visitedSteps.has(nextStep)) {
+            continue; // already processed this step, don't do it again
+        }
+
+        // check each input of nextStep, if it touches anything in unassignedVariables, that's not valid
+        for (const variable of nextStep.inputMapping.values()) {
+            if (unassignedVariables.has(variable)) {
+                errors.push(`Step ${currentStep.id} in process "${process.name}" uses a variable before it is assigned: ${variable.name}`);
+                return false; // once an uninitialized variable is used, stop down this branch
+            }
+        }
+
+        if (isUserStep(nextStep) && !checkUnassignedVariablesRecursive(process, nextStep, visitedSteps, unassignedVariables, errors)) {
+            allValid = false;
+        }
+    }
+
+    return allValid;
 }
 
 function applyProcessesToWorkspace(workspace: Workspace, processes: UserProcess[]) {
