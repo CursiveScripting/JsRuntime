@@ -7,7 +7,11 @@ import { DataType, isDeserializable } from '../DataType';
 import { Process } from '../Process';
 import { Parameter } from '../Parameter';
 import { Variable } from '../Variable';
-import { Step } from '../Step';
+import { Step, StepType } from '../Step';
+import { StopStep } from '../StopStep';
+import { StartStep } from '../StartStep';
+import { UserStep } from '../UserStep';
+import { ReturningStep } from '../ReturningStep';
 
 export function loadProcesses(workspace: Workspace, processData: IUserProcessData[], checkSchema: boolean) {
     if (checkSchema) {
@@ -167,7 +171,6 @@ function getProcessesByName(workspace: Workspace, userProcesses: UserProcess[]):
         }
     }
 
-    
     if (errors.length > 0) {
         return [
             new Map<string, Process>(),
@@ -175,7 +178,7 @@ function getProcessesByName(workspace: Workspace, userProcesses: UserProcess[]):
         ];
     }
 
-    return [ processesByName, errors ]
+    return [ processesByName, errors ];
 }
 
 function areNamesUnique(names: string[], errors: string[]) {
@@ -220,12 +223,50 @@ function loadProcessSteps(
     const stepsById = new Map<String, Step>();
 
     const stepsWithInputs: Array<[IStopStepData | IProcessStepData, Step, Parameter[]]> = [];
-    const stepsWithOutputs: Array<[IStartStepData | IProcessStepData, Step, Parameter[]]> = [];
+    const stepsWithOutputs: Array<[IStartStepData | IProcessStepData, ReturningStep, Parameter[]]> = [];
     
     const initialErrorCount = errors.length;
 
-    for (const step of steps) {
-        // TODO: this
+    for (const stepData of steps) {
+        if (stepsById.has(stepData.id)) {
+            errors.push(`Process "${process.name}" has multiple steps with ID ${stepData.id}`);
+            continue;
+        }
+
+        if (isStartStep(stepData)) {
+            const step = new StartStep(stepData.id);
+
+            if (process.firstStep === undefined) {
+                process.firstStep = step;
+            }
+            else {
+                errors.push(`Process "${process.name}" has multiple start steps`);
+            }
+
+            stepsWithOutputs.push([stepData, step, process.inputs]);
+            stepsById.set(step.id, step);
+        }
+        else if (isStopStep(stepData)) {
+            const step = new StopStep(stepData.id, stepData.name === undefined ? null : stepData.name);
+            stepsWithInputs.push([stepData, step, process.outputs]);
+            stepsById.set(step.id, step);
+        }
+        else if (isProcessStep(stepData)) {
+            const innerProcess = processesByName.get(stepData.process);
+
+            if (innerProcess === undefined) {
+                errors.push(`Unrecognised process "${stepData.process}" on step ${stepData.id} in process "${process.name}"`);
+                continue;
+            }
+
+            const step = new UserStep(stepData.id, innerProcess);
+            stepsWithInputs.push([stepData, step, innerProcess.inputs]);
+            stepsWithOutputs.push([stepData, step, innerProcess.outputs]);
+            stepsById.set(step.id, step);
+        }
+        else {
+            errors.push(`Invalid type "${(stepData as any).type}" on step ${(stepData as any).id} in process "${process.name}"`);
+        }
     }
 
     const variablesByName = createMap(process.variables, v => v.name);
@@ -241,10 +282,73 @@ function loadProcessSteps(
             mapParameters(stepData.outputs, step, parameters, variablesByName, process, false, errors);
         }
 
-        // TODO: return paths
+        if (stepData.returnPath !== undefined) {
+            const destStep = stepsById.get(stepData.returnPath);
+            if (destStep !== undefined) {
+                step.defaultReturnPath = destStep;
+            }
+            else {
+                errors.push(`Step ${step.id} in process "${process.name}" tries to connect to non-existent step "${stepData.returnPath}"`);
+            }
+        }
+        else if (isProcessStep(stepData) && stepData.returnPaths !== undefined) {
+            if (!isUserStep(step)) {
+                continue;
+            }
+
+            const expectedReturnPaths = (step as UserStep).childProcess.returnPaths;
+
+            const mappedPaths = new Set<string>();
+
+            for (const returnPath of Object.keys(stepData.returnPaths)) {
+                const destName = stepData.returnPaths[returnPath];
+
+                if (expectedReturnPaths.indexOf(returnPath) === -1) {
+                    errors.push(`Step ${step.id} in process "${process.name}" tries to map unexpected return path "${returnPath}"`);
+                    continue;
+                }
+                
+                const destStep = stepsById.get(destName);
+
+                if (destStep === undefined) {
+                    errors.push(`Step ${step.id} tries to connect to non-existent step "${destName}" in process "${process.name}"`);
+                    continue;
+                }
+
+                if (mappedPaths.has(returnPath)) {
+                    errors.push(`Step ${step.id} in process "${process.name}" tries to map the "${returnPath}\" return path multiple times`);
+                    continue;
+                }
+
+                step.returnPaths.set(returnPath, destStep);
+                mappedPaths.add(returnPath);
+            }
+
+            for (const path of expectedReturnPaths) {
+                if (!mappedPaths.has(path)) {
+                    errors.push(`Step ${step.id} in process "${process.name}" fails to map the "${path}" return path`);
+                }
+            }
+        }
     }
 
     return errors.length === initialErrorCount;
+}
+
+function isStartStep(step: IStartStepData | IStopStepData | IProcessStepData): step is IStartStepData {
+    return step.type === 'start';
+}
+
+function isStopStep(step: IStartStepData | IStopStepData | IProcessStepData): step is IStopStepData {
+    return step.type === 'stop';
+}
+
+function isProcessStep(step: IStartStepData | IStopStepData | IProcessStepData): step is IProcessStepData {
+    return step.type === 'process';
+}
+
+function isUserStep(step: Step): step is UserStep {
+    return step.stepType === StepType.Process;
 }
 
 function mapParameters(
