@@ -95,12 +95,16 @@ function loadParameters(
         return [];
     }
 
-    const paramsWithTypes: [IParameterData, DataType | null][] = parameters.map(p => [
-        p,
-        typesByName.has(p.type)
-            ? typesByName.get(p.type)
-            : null
-    ]);
+    const paramsWithTypes: [IParameterData, DataType | null][] = parameters.map(p => {
+        const type = typesByName.get(p.type);
+
+        return [
+            p,
+            type === undefined
+                ? null
+                : type
+        ]
+    });
 
     const errorParams = paramsWithTypes
         .filter(p => p[1] === null)
@@ -110,7 +114,9 @@ function loadParameters(
         errors.push(`Unrecognised type \"${param.type}\" used by ${paramType} of process ${process.name}`);
     }
 
-    return paramsWithTypes.map(p => new Parameter(p[0].name, p[1]));
+    return paramsWithTypes
+        .filter(p => p[1] !== null)
+        .map(p => new Parameter(p[0].name, p[1]!));
 }
 
 function loadVariables(
@@ -134,12 +140,13 @@ function loadVariables(
 
         usedNames.add(variableData.name);
 
-        if (!typesByName.has(variableData.type)) {
+        const dataType = typesByName.get(variableData.type);
+
+        if (dataType === undefined) {
             errors.push(`Unrecognised type \"${variableData.type}\" used by variable ${variableData.name} of process ${process.name}`);
             continue;
         }
 
-        const dataType = typesByName.get(variableData.type);
         const value = variableData.initialValue !== undefined && isDeserializable(dataType)
             ? dataType.deserialize(variableData.initialValue)
             : dataType.getDefaultValue();
@@ -151,7 +158,7 @@ function loadVariables(
 }
 
 function getProcessesByName(workspace: Workspace, userProcesses: UserProcess[]): [Map<string, Process>, string[] | null] {
-    const errors = [];
+    const errors: string[] = [];
 
     if (!areNamesUnique(userProcesses.map(p => p.name), errors)) {
         return [
@@ -199,7 +206,7 @@ function areNamesUnique(names: string[], errors: string[]) {
 }
 
 function loadSteps(processData: IUserProcessData[], processesByName: Map<string, Process>) {
-    let errors = [];
+    const errors: string[] = [];
 
     for (const process of processData) {
         const userProcess = processesByName.get(process.name) as UserProcess;
@@ -296,7 +303,7 @@ function loadProcessSteps(
                 continue;
             }
 
-            const expectedReturnPaths = (step as UserStep).childProcess.returnPaths;
+            const expectedReturnPaths = step.childProcess.returnPaths;
 
             const mappedPaths = new Set<string>();
 
@@ -420,7 +427,7 @@ function checkUnassignedVariables(process: UserProcess, errors: string[]) {
 
     const visitedSteps = new Set<Step>();
 
-    return checkUnassignedVariablesRecursive(process, process.firstStep, visitedSteps, unassignedVariables, errors);
+    return checkUnassignedVariablesRecursive(process, process.firstStep!, visitedSteps, unassignedVariables, errors);
 }
 
 function checkUnassignedVariablesRecursive(
@@ -508,7 +515,7 @@ function applyProcessesToWorkspace(workspace: Workspace, processes: UserProcess[
 
 function clearUserProcesses(workspace: Workspace) {
     for (const process of workspace.requiredProcesses)
-        process.implementation = null;
+        process.implementation = undefined;
 
     workspace.userProcesses.splice(0, workspace.userProcesses.length);
 }

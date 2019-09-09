@@ -1,4 +1,4 @@
-import { IStackFrame } from './StackFrame';
+import { IStackFrame } from './IStackFrame';
 import { StartStep } from './StartStep';
 import { ValueSet } from './ValueSet';
 import { UserProcess } from './UserProcess';
@@ -32,7 +32,7 @@ export class CallStack {
         return {
             process,
             step,
-            variables: this.currentVariables,
+            variables: this.currentVariables!,
         };
     }
 

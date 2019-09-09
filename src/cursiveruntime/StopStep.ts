@@ -10,7 +10,7 @@ export class StopStep extends Step {
     public readonly stepType = StepType.Stop;
 
     public run(stack: CallStack) {
-        const variables = stack.currentVariables.values;
+        const variables = stack.currentVariables!.values;
 
         const outputs = ValueSet.createFromMap(this.inputMapping, v => variables.get(v.name));
 

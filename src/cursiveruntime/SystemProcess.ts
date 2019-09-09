@@ -1,7 +1,7 @@
 import { Process } from './Process';
 import { Parameter } from './Parameter';
 import { ValueSet } from './ValueSet';
-import { IProcessResult } from './ProcessResult';
+import { IProcessResult } from './IProcessResult';
 import { CallStack } from './CallStack';
 
 export class SystemProcess extends Process {
@@ -12,7 +12,7 @@ export class SystemProcess extends Process {
         private readonly operation: (variables: ValueSet) => Promise<IProcessResult>,
         public readonly inputs: Parameter[],
         public readonly outputs: Parameter[],
-        public readonly returnPaths: string[] | null
+        public readonly returnPaths: string[]
     ) {
         super(name, description, folder, inputs, outputs, returnPaths, false);
     }

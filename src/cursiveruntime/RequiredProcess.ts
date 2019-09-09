@@ -4,7 +4,7 @@ import { UserProcess } from './UserProcess';
 import { CallStack } from './CallStack';
 import { DebugCallStack } from './DebugCallStack';
 import { ValueSet } from './ValueSet';
-import { IStackFrame } from './StackFrame';
+import { IStackFrame } from './IStackFrame';
 
 export class RequiredProcess extends Process {
     constructor(
@@ -13,7 +13,7 @@ export class RequiredProcess extends Process {
         public readonly folder: string | null,
         public readonly inputs: Parameter[],
         public readonly outputs: Parameter[],
-        public readonly returnPaths: string[] | null
+        public readonly returnPaths: string[]
     ) {
         super(name, description, folder, inputs, outputs, returnPaths, true);
     }

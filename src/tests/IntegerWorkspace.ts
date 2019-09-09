@@ -36,7 +36,7 @@ export class IntegerWorkspace extends Workspace {
                 },
                 [input1, input2],
                 [output],
-                null
+                []
             );
 
             this.add = async (in1, in2) => {
@@ -78,7 +78,7 @@ export class IntegerWorkspace extends Workspace {
                 },
                 [input1, input2],
                 [output],
-                null
+                []
             );
 
             this.subtract = async (in1, in2) => {
@@ -120,7 +120,7 @@ export class IntegerWorkspace extends Workspace {
                 },
                 [input1, input2],
                 [output],
-                null
+                []
             );
 
             this.multiply = async (in1, in2) => {
@@ -163,7 +163,7 @@ export class IntegerWorkspace extends Workspace {
                 },
                 [input1, input2],
                 [],
-                null
+                []
             );
 
             this.compare = async (in1, in2) => {
@@ -191,7 +191,7 @@ export class IntegerWorkspace extends Workspace {
                 null,
                 [ input ],
                 [ output ],
-                null
+                []
             );
 
             this.modifyNumber = async (in1) => {

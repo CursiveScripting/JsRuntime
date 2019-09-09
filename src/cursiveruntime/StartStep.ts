@@ -11,7 +11,7 @@ export class StartStep extends ReturningStep {
     public readonly stepType = StepType.Start;
 
     public run(stack: CallStack, inputs: ValueSet) {
-        const variables = stack.currentVariables.values;
+        const variables = stack.currentVariables!.values;
 
         for (const [name, variable] of this.outputMapping) {
             variables.set(variable.name, inputs.values.get(name));

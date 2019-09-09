@@ -7,7 +7,7 @@ import { CallStack } from './CallStack';
 import { Step, StepType } from './Step';
 import { StopStep } from './StopStep';
 import { UserStep } from './UserStep';
-import { IProcessResult } from './ProcessResult';
+import { IProcessResult } from './IProcessResult';
 
 export class UserProcess extends Process {
     constructor(
@@ -24,14 +24,14 @@ export class UserProcess extends Process {
 
     public readonly processType = 'user';
 
-    public firstStep: StartStep;
+    public firstStep?: StartStep;
 
     public async run(inputs: ValueSet, stack: CallStack) {
         const variableValues = ValueSet.createFromArray(this.variables, v => v.name, v => v.initialValue);
 
-        let currentStep: Step | null = await this.runStartStep(inputs, stack, variableValues);
+        let currentStep: Step | undefined = await this.runStartStep(inputs, stack, variableValues);
 
-        while (currentStep !== null) {
+        while (currentStep !== undefined) {
             if (currentStep.stepType === StepType.Process) {
                 currentStep = await this.runStep(currentStep as UserStep, stack);
             }
@@ -49,7 +49,7 @@ export class UserProcess extends Process {
     }
 
     private async runStartStep(inputs: ValueSet, stack: CallStack, variableValues: ValueSet) {
-        const step = this.firstStep;
+        const step = this.firstStep!;
 
         await stack.enterNewProcess(this, step, variableValues);
 

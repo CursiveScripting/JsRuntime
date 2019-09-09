@@ -1,7 +1,7 @@
 import { CallStack } from './CallStack';
 import { Parameter } from './Parameter';
 import { ValueSet } from './ValueSet';
-import { IProcessResult } from './ProcessResult';
+import { IProcessResult } from './IProcessResult';
 
 export abstract class Process {
     constructor(
@@ -10,7 +10,7 @@ export abstract class Process {
         public readonly folder: string | null,
         public readonly inputs: Parameter[],
         public readonly outputs: Parameter[],
-        public readonly returnPaths: string[] | null,
+        public readonly returnPaths: string[],
         public readonly isUserProcess: boolean
     ) {
 

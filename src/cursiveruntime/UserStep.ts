@@ -14,7 +14,7 @@ export class UserStep extends ReturningStep {
     public readonly returnPaths = new Map<string, Step>();
 
     public async run(stack: CallStack) {
-        const variables = stack.currentVariables.values;
+        const variables = stack.currentVariables!.values;
 
         // map input parameters in from variables
         const childInputs = ValueSet.createFromMap(this.inputMapping, v => variables.get(v.name));

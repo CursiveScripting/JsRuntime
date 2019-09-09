@@ -1,5 +1,5 @@
 import { CallStack } from './CallStack';
-import { IStackFrame } from './StackFrame';
+import { IStackFrame } from './IStackFrame';
 
 export class DebugCallStack extends CallStack {
     constructor(
