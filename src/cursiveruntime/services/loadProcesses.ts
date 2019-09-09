@@ -51,17 +51,14 @@ export function loadProcesses(workspace: Workspace, processData: IUserProcessDat
     return null;
 }
 
-function createProcesses(typesByName: Map<string, DataType>, processData: IUserProcessData[]): [ UserProcess[], string[] ] {
+function createProcesses(typesByName: Map<string, DataType>, processData: IUserProcessData[]): [ UserProcess[], string[] | null ] {
     const errors: string[] = [];
 
     const processes = processData.map(p => createProcess(p, typesByName, errors));
 
-    return [
-        errors.length > 0   
-            ? []
-            : processes,
-        errors
-    ];
+    return errors.length > 0
+        ? [ [], errors ]
+        : [ processes, null ]
 }
 
 function createProcess(processData: IUserProcessData, typesByName: Map<string, DataType>, errors: string[]) {
@@ -185,7 +182,7 @@ function getProcessesByName(workspace: Workspace, userProcesses: UserProcess[]):
         ];
     }
 
-    return [ processesByName, errors ];
+    return [ processesByName, null ];
 }
 
 function areNamesUnique(names: string[], errors: string[]) {
@@ -308,13 +305,12 @@ function loadProcessSteps(
             const mappedPaths = new Set<string>();
 
             for (const returnPath of Object.keys(stepData.returnPaths)) {
-                const destName = stepData.returnPaths[returnPath];
-
                 if (expectedReturnPaths.indexOf(returnPath) === -1) {
                     errors.push(`Step ${step.id} in process "${process.name}" tries to map unexpected return path "${returnPath}"`);
                     continue;
                 }
                 
+                const destName = stepData.returnPaths[returnPath];                
                 const destStep = stepsById.get(destName);
 
                 if (destStep === undefined) {

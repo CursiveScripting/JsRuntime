@@ -163,7 +163,7 @@ export class IntegerWorkspace extends Workspace {
                 },
                 [input1, input2],
                 [],
-                []
+                ['less', 'greater', 'equal']
             );
 
             this.compare = async (in1, in2) => {
