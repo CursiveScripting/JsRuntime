@@ -172,7 +172,7 @@ export class IntegerWorkspace extends Workspace {
                 inputs.set(input1, in1);
                 inputs.set(input2, in2);
 
-                const { returnPath } = await multiply.run(inputs);
+                const { returnPath } = await compare.run(inputs);
 
                 return Promise.resolve(returnPath as 'less' | 'greater' | 'equal');
             };
