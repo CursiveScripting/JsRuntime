@@ -12,7 +12,7 @@ export class SystemProcess extends Process {
         private readonly operation: (variables: ValueSet) => Promise<IProcessResult>,
         public readonly inputs: Parameter[],
         public readonly outputs: Parameter[],
-        public readonly returnPaths: string[]
+        public readonly returnPaths: string[] | null
     ) {
         super(name, description, folder, inputs, outputs, returnPaths, false);
     }

@@ -10,7 +10,7 @@ export abstract class Process {
         public readonly folder: string | null,
         public readonly inputs: Parameter[],
         public readonly outputs: Parameter[],
-        public readonly returnPaths: string[],
+        public readonly returnPaths: string[] | null,
         public readonly isUserProcess: boolean
     ) {
 

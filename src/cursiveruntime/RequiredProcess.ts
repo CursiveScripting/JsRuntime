@@ -13,15 +13,15 @@ export class RequiredProcess extends Process {
         public readonly folder: string | null,
         public readonly inputs: Parameter[],
         public readonly outputs: Parameter[],
-        public readonly returnPaths: string[]
+        public readonly returnPaths: string[] | null
     ) {
         super(name, description, folder, inputs, outputs, returnPaths, true);
     }
 
-    implementation: UserProcess;
+    implementation?: UserProcess;
 
     public async run(inputs: ValueSet, stack: CallStack) {
-        return await this.implementation.run(inputs, stack);
+        return await this.implementation!.run(inputs, stack);
     }
 
     public async start(inputs: ValueSet) {
