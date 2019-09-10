@@ -4,10 +4,19 @@
   "description": "JS runtime for the Cursive Scripting system",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest"
+  },
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/CursiveScripting/JsRuntime.git"
   },
   "author": "",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CursiveScripting/JsRuntime/issues"
+  },
+  "homepage": "https://github.com/CursiveScripting/JsRuntime",
   "dependencies": {
     "ajv": "^6.10.2",
     "cursive-schema": "git+https://github.com/CursiveScripting/Schema.git"
