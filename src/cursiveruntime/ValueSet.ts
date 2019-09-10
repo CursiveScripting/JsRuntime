@@ -1,4 +1,4 @@
-import { TypedParameter } from './Parameter';
+import { TypedParameter } from './TypedParameter';
 
 export class ValueSet {
   public static createFromArray<TElement, TValue>(

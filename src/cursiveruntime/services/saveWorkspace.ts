@@ -1,4 +1,4 @@
-import { LookupType } from '../DataType';
+import { LookupType } from '../LookupType';
 import { Process } from '../Process';
 import { Workspace } from '../Workspace';
 import { IWorkspaceData } from './serializedDataModels';
