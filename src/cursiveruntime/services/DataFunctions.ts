@@ -1,25 +1,25 @@
 import ajv from 'ajv';
 
 export function createMap<TElement>(elements: TElement[], getKey: (el: TElement) => string) {
-    const map = new Map<string, TElement>();
+  const map = new Map<string, TElement>();
 
-    for (const element of elements) {
-        map.set(getKey(element), element);
-    }
+  for (const element of elements) {
+    map.set(getKey(element), element);
+  }
 
-    return map;
+  return map;
 }
 
 export function validateSchema(schema: any, data: any) {
-    const validator = new ajv();
+  const validator = new ajv();
 
-    const validate = validator.compile(schema);
+  const validate = validator.compile(schema);
 
-    const valid = validate(data);
+  const valid = validate(data);
 
-    if (valid || validator.errors === undefined) {
-        return null;
-    }
+  if (valid || validator.errors === undefined) {
+    return null;
+  }
 
-    return validator.errors;
+  return validator.errors;
 }

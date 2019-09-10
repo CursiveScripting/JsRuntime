@@ -6,16 +6,16 @@ import { SystemProcess } from './SystemProcess';
 import { UserProcess } from './UserProcess';
 
 export class Workspace {
-    public types: DataType[] = [];
-    public requiredProcesses: RequiredProcess[] = [];
-    public systemProcesses: SystemProcess[] = [];
-    public userProcesses: UserProcess[] = [];
+  public types: DataType[] = [];
+  public requiredProcesses: RequiredProcess[] = [];
+  public systemProcesses: SystemProcess[] = [];
+  public userProcesses: UserProcess[] = [];
 
-    public loadUserProcesses(processJson: string | IUserProcessData[], validateSchema: boolean = true) {
-        if (typeof processJson === 'string') {
-            processJson = JSON.parse(processJson) as IUserProcessData[];
-        }
-
-        return loadProcesses(this, processJson, validateSchema);
+  public loadUserProcesses(processJson: string | IUserProcessData[], validateSchema: boolean = true) {
+    if (typeof processJson === 'string') {
+      processJson = JSON.parse(processJson) as IUserProcessData[];
     }
+
+    return loadProcesses(this, processJson, validateSchema);
+  }
 }

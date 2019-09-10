@@ -1,35 +1,37 @@
 import { TypedParameter } from './Parameter';
 
 export class ValueSet {
-    public static createFromArray<TElement, TValue>(elements: TElement[], getKey: (el: TElement) => string, getValue: (el: TElement) => TValue) {
-        const map = new Map<string, TValue>();
+  public static createFromArray<TElement, TValue>(
+    elements: TElement[],
+    getKey: (el: TElement) => string,
+    getValue: (el: TElement) => TValue,
+  ) {
+    const map = new Map<string, TValue>();
 
-        for (const element of elements) {
-            map.set(getKey(element), getValue(element));
-        }
-
-        return new ValueSet(map);
+    for (const element of elements) {
+      map.set(getKey(element), getValue(element));
     }
 
-    public static createFromMap<TElement, TValue>(map: Map<string, TElement>, getValue: (el: TElement) => TValue) {
-        const resultMap = new Map<string, TValue>();
+    return new ValueSet(map);
+  }
 
-        for (const [key, value] of map) {
-            resultMap.set(key, getValue(value));
-        }
+  public static createFromMap<TElement, TValue>(map: Map<string, TElement>, getValue: (el: TElement) => TValue) {
+    const resultMap = new Map<string, TValue>();
 
-        return new ValueSet(resultMap);
+    for (const [key, value] of map) {
+      resultMap.set(key, getValue(value));
     }
 
-    constructor(public readonly values: Map<string, any> = new Map<string, any>()) {
+    return new ValueSet(resultMap);
+  }
 
-    }
-    
-    public get<TValue>(param: TypedParameter<TValue>) {
-        return this.values.get(param.name) as TValue;
-    }
+  constructor(public readonly values: Map<string, any> = new Map<string, any>()) {}
 
-    public set<TValue>(param: TypedParameter<TValue>, value: TValue) {
-        this.values.set(param.name, value);
-    }
+  public get<TValue>(param: TypedParameter<TValue>) {
+    return this.values.get(param.name) as TValue;
+  }
+
+  public set<TValue>(param: TypedParameter<TValue>, value: TValue) {
+    this.values.set(param.name, value);
+  }
 }
