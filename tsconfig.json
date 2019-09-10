@@ -20,7 +20,7 @@
     "src"
   ],
   "exclude": [
-      "node_mdules",
+      "node_modules",
       "./src/tests"
   ]
 }
