@@ -14,8 +14,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "outDir": "./lib",
-    "jsx": "preserve"
+    "outDir": "./lib"
   },
   "include": [
     "src"
