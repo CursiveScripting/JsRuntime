@@ -1,12 +1,12 @@
 import { IStackFrame } from './IStackFrame';
 import { StartStep } from './StartStep';
-import { ValueSet } from './ValueSet';
-import { UserProcess } from './UserProcess';
 import { Step } from './Step';
+import { UserProcess } from './UserProcess';
+import { ValueSet } from './ValueSet';
 
 export class CallStack {
-    private readonly frames: IStackFrame[] = [];
     public currentVariables?: ValueSet;
+    private readonly frames: IStackFrame[] = [];
 
     constructor(public readonly maxStackSize: number = 100) {
 
@@ -28,18 +28,6 @@ export class CallStack {
         await this.push(frame);
     }
 
-    protected createFrame(process: UserProcess, step: Step): IStackFrame {
-        return {
-            process,
-            step,
-            variables: this.currentVariables!,
-        };
-    }
-
-    protected async push(frame: IStackFrame) {
-        this.frames.push(frame);
-    }
-
     public exitProcess() {
         this.exitStep();
 
@@ -50,5 +38,17 @@ export class CallStack {
 
     public exitStep() {
         this.frames.pop();
+    }
+
+    protected createFrame(process: UserProcess, step: Step): IStackFrame {
+        return {
+            process,
+            step,
+            variables: this.currentVariables!,
+        };
+    }
+
+    protected async push(frame: IStackFrame) {
+        this.frames.push(frame);
     }
 }

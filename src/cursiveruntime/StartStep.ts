@@ -1,14 +1,14 @@
+import { CallStack } from './CallStack';
 import { ReturningStep } from './ReturningStep';
 import { StepType } from './Step';
-import { CallStack } from './CallStack';
 import { ValueSet } from './ValueSet';
 
 export class StartStep extends ReturningStep {
+    public readonly stepType = StepType.Start;
+
     constructor(id: string) {
         super(id);
     }
-
-    public readonly stepType = StepType.Start;
 
     public run(stack: CallStack, inputs: ValueSet) {
         const variables = stack.currentVariables!.values;

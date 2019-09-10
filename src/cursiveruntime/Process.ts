@@ -1,7 +1,7 @@
 import { CallStack } from './CallStack';
+import { IProcessResult } from './IProcessResult';
 import { Parameter } from './Parameter';
 import { ValueSet } from './ValueSet';
-import { IProcessResult } from './IProcessResult';
 
 export abstract class Process {
     constructor(

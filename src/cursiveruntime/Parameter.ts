@@ -1,4 +1,4 @@
-import { DataType, TypedDataType } from './DataType';
+import { DataType } from './DataType';
 
 export class Parameter {
     constructor(
@@ -6,14 +6,5 @@ export class Parameter {
         public readonly type: DataType
     ) {
 
-    }
-}
-
-export class TypedParameter<T> extends Parameter {
-    constructor(
-        public readonly name: string,
-        public readonly type: TypedDataType<T>
-    ) {
-        super(name, type);
     }
 }

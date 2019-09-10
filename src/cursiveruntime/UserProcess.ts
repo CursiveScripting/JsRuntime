@@ -1,15 +1,19 @@
-import { Process } from './Process';
-import { Parameter } from './Parameter';
-import { Variable } from './Variable';
-import { StartStep } from './StartStep';
-import { ValueSet } from './ValueSet';
 import { CallStack } from './CallStack';
+import { IProcessResult } from './IProcessResult';
+import { Parameter } from './Parameter';
+import { Process } from './Process';
+import { StartStep } from './StartStep';
 import { Step, StepType } from './Step';
 import { StopStep } from './StopStep';
 import { UserStep } from './UserStep';
-import { IProcessResult } from './IProcessResult';
+import { ValueSet } from './ValueSet';
+import { Variable } from './Variable';
 
-export class UserProcess extends Process {
+export class UserProcess extends Process {    
+    public readonly processType = 'user';
+
+    public firstStep?: StartStep;
+
     constructor(
         public readonly name: string,
         public readonly description: string,
@@ -21,10 +25,6 @@ export class UserProcess extends Process {
     ) {
         super(name, description, folder, inputs, outputs, returnPaths, true);
     }
-
-    public readonly processType = 'user';
-
-    public firstStep?: StartStep;
 
     public async run(inputs: ValueSet, stack: CallStack) {
         const variableValues = ValueSet.createFromArray(this.variables, v => v.name, v => v.initialValue);
@@ -78,8 +78,8 @@ export class UserProcess extends Process {
         stack.exitProcess();
 
         return {
-            returnPath: step.returnValue,
             outputs,
+            returnPath: step.returnValue,
         };
     }
 }

@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
   },
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/CursiveScripting/JsRuntime.git"
+    "type": "git",
+    "url": "git+https://github.com/CursiveScripting/JsRuntime.git"
   },
   "author": "",
   "license": "MIT",
@@ -21,10 +23,14 @@
     "ajv": "^6.10.2",
     "cursive-schema": "git+https://github.com/CursiveScripting/Schema.git"
   },
+  "files": ["lib/**/*"],
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "jest": "^24.9.0",
+    "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
+    "tslint": "^5.20.0",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.6.2"
   },
   "jest": {

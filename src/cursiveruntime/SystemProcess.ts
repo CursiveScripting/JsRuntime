@@ -1,8 +1,8 @@
-import { Process } from './Process';
-import { Parameter } from './Parameter';
-import { ValueSet } from './ValueSet';
-import { IProcessResult } from './IProcessResult';
 import { CallStack } from './CallStack';
+import { IProcessResult } from './IProcessResult';
+import { Parameter } from './Parameter';
+import { Process } from './Process';
+import { ValueSet } from './ValueSet';
 
 export class SystemProcess extends Process {
     constructor(

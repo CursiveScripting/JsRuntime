@@ -1,17 +1,17 @@
 import processesSchema from 'cursive-schema/processes.json';
-import { IUserProcessData, IParameterData, IProcessStepData, IStartStepData, IStopStepData } from './serializedDataModels';
-import { validateSchema, createMap } from './DataFunctions';
-import { Workspace } from '../Workspace';
-import { UserProcess } from '../UserProcess';
 import { DataType, isDeserializable } from '../DataType';
-import { Process } from '../Process';
 import { Parameter } from '../Parameter';
-import { Variable } from '../Variable';
+import { Process } from '../Process';
+import { ReturningStep } from '../ReturningStep';
+import { StartStep } from '../StartStep';
 import { Step, StepType } from '../Step';
 import { StopStep } from '../StopStep';
-import { StartStep } from '../StartStep';
+import { UserProcess } from '../UserProcess';
 import { UserStep } from '../UserStep';
-import { ReturningStep } from '../ReturningStep';
+import { Variable } from '../Variable';
+import { Workspace } from '../Workspace';
+import { createMap, validateSchema } from './DataFunctions';
+import { IParameterData, IProcessStepData, IStartStepData, IStopStepData, IUserProcessData } from './serializedDataModels';
 
 export function loadProcesses(workspace: Workspace, processData: IUserProcessData[], checkSchema: boolean) {
     if (checkSchema) {
@@ -92,7 +92,7 @@ function loadParameters(
         return [];
     }
 
-    const paramsWithTypes: [IParameterData, DataType | null][] = parameters.map(p => {
+    const paramsWithTypes: Array<[IParameterData, DataType | null]> = parameters.map(p => {
         const type = typesByName.get(p.type);
 
         return [
@@ -224,7 +224,7 @@ function loadProcessSteps(
     processesByName: Map<string, Process>,
     errors: string[]
 ) {
-    const stepsById = new Map<String, Step>();
+    const stepsById = new Map<string, Step>();
 
     const stepsWithInputs: Array<[IStopStepData | IProcessStepData, Step, Parameter[]]> = [];
     const stepsWithOutputs: Array<[IStartStepData | IProcessStepData, ReturningStep, Parameter[]]> = [];
@@ -510,8 +510,9 @@ function applyProcessesToWorkspace(workspace: Workspace, processes: UserProcess[
 }
 
 function clearUserProcesses(workspace: Workspace) {
-    for (const process of workspace.requiredProcesses)
+    for (const process of workspace.requiredProcesses) {
         process.implementation = undefined;
+    }
 
     workspace.userProcesses.splice(0, workspace.userProcesses.length);
 }

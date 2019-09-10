@@ -1,12 +1,14 @@
-import { Process } from './Process';
-import { Parameter } from './Parameter';
-import { UserProcess } from './UserProcess';
 import { CallStack } from './CallStack';
 import { DebugCallStack } from './DebugCallStack';
-import { ValueSet } from './ValueSet';
 import { IStackFrame } from './IStackFrame';
+import { Parameter } from './Parameter';
+import { Process } from './Process';
+import { UserProcess } from './UserProcess';
+import { ValueSet } from './ValueSet';
 
 export class RequiredProcess extends Process {
+    public implementation?: UserProcess;
+
     constructor(
         public readonly name: string,
         public readonly description: string,
@@ -17,8 +19,6 @@ export class RequiredProcess extends Process {
     ) {
         super(name, description, folder, inputs, outputs, returnPaths, true);
     }
-
-    implementation?: UserProcess;
 
     public async run(inputs: ValueSet, stack: CallStack) {
         return await this.implementation!.run(inputs, stack);

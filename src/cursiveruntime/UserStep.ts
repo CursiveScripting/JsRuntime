@@ -1,17 +1,17 @@
-import { ReturningStep } from './ReturningStep';
-import { Process } from './Process';
-import { StepType, Step } from './Step';
 import { CallStack } from './CallStack';
+import { Process } from './Process';
+import { ReturningStep } from './ReturningStep';
+import { Step, StepType } from './Step';
 import { ValueSet } from './ValueSet';
 
 export class UserStep extends ReturningStep {
-    constructor(id: string, readonly childProcess: Process) {
-        super(id);
-    }
-    
     public readonly stepType = StepType.Process;
 
     public readonly returnPaths = new Map<string, Step>();
+
+    constructor(id: string, readonly childProcess: Process) {
+        super(id);
+    }
 
     public async run(stack: CallStack) {
         const variables = stack.currentVariables!.values;
@@ -24,7 +24,7 @@ export class UserStep extends ReturningStep {
 
         // map any output parameters back out into variables
         if (outputs !== null) {
-            for (var [key, val] of this.outputMapping) {
+            for (const [key, val] of this.outputMapping) {
                 variables.set(val.name, outputs.values.get(key));
             }
         }
