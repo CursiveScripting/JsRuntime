@@ -8,4 +8,4 @@ export { ValueSet } from './ValueSet';
 export { Workspace } from './Workspace';
 export { TypedParameter } from './TypedParameter';
 export { Parameter } from './Parameter';
-//export { IUserProcessData } from './services/serializedDataModels';
+export { IUserProcessData, IWorkspaceData } from './services/serializedDataModels';

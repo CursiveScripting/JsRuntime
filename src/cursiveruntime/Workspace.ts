@@ -4,6 +4,7 @@ import { loadProcesses } from './services/loadProcesses';
 import { IUserProcessData } from './services/serializedDataModels';
 import { SystemProcess } from './SystemProcess';
 import { UserProcess } from './UserProcess';
+import { saveWorkspace } from './services/saveWorkspace';
 
 export class Workspace {
   public types: DataType[] = [];
@@ -17,5 +18,9 @@ export class Workspace {
     }
 
     return loadProcesses(this, processJson, validateSchema);
+  }
+
+  public saveWorkspace() {
+    return saveWorkspace(this);
   }
 }
