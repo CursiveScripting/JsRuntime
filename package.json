@@ -24,7 +24,6 @@
   "bugs": {
     "url": "https://github.com/CursiveScripting/JsRuntime/issues"
   },
-  "homepage": "https://github.com/CursiveScripting/JsRuntime",
   "keywords": ["cursive", "scripting", "runtime"],
   "dependencies": {
     "ajv": "^6.10.2",
