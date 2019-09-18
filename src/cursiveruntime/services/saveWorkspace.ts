@@ -54,6 +54,10 @@ function saveProcessDefinition(process: Process) {
 }
 
 export function regexToString(regex: RegExp) {
-     // TODO: this looks to include flags and slashes on either end. Don't think we want those.
-    return regex.toString();
+    const strRegex = regex.toString();
+
+    const start = 1; // assume regex always starts with a slash
+    const end = strRegex.lastIndexOf('/'); // there may be flags after the last slash, so need to find it
+
+    return strRegex.substring(start, end);
 }
