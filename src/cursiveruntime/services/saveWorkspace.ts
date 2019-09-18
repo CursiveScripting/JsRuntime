@@ -20,7 +20,7 @@ export function saveWorkspace(workspace: Workspace): IWorkspaceData {
             extends: t.extendsType === null ? undefined : t.extendsType.name,
             guidance: t.guidance,
             name: t.name,
-            validation: t.validation === undefined ? undefined : t.validation.toString(), // TODO: this looks to include flags and slashes on either end. Don't think we want those.
+            validation: t.validation === undefined ? undefined : regexToString(t.validation),
           },
     ),
   };
@@ -51,4 +51,9 @@ function saveProcessDefinition(process: Process) {
           }),
     returnPaths: process.returnPaths.length === 0 ? undefined : process.returnPaths.slice(),
   };
+}
+
+export function regexToString(regex: RegExp) {
+     // TODO: this looks to include flags and slashes on either end. Don't think we want those.
+    return regex.toString();
 }

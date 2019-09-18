@@ -1,5 +1,6 @@
 import { FixedType } from '../cursiveruntime/FixedType';
 import { TypedDataType } from '../cursiveruntime/TypedDataType';
+import { regexToString } from '../cursiveruntime/services/saveWorkspace';
 
 const dtObject = new TypedDataType<object>('object', '#ff0000', false);
 const dtSet = new TypedDataType<Set<object>>('set', '#ff9900', false, dtObject, () => new Set<object>());
@@ -81,12 +82,28 @@ test('Value type uses specified default', () => {
 
 test('Valid value validates', () => {
   expect(dtInt.validation).not.toBeUndefined();
-  expect(dtInt.validation!.test('2'));
+  expect(dtInt.validation!.test('2')).toBe(true);
 });
 
 test("Invalid value doesn't validate", () => {
   expect(dtInt.validation).not.toBeUndefined();
-  expect(dtInt.validation!.test('-2'));
+  expect(dtInt.validation!.test('-2')).toBe(false);
+});
+
+test('Valid value validates after serialization', () => {
+  expect(dtInt.validation).not.toBeUndefined();
+  
+  const expression = new RegExp(regexToString(dtInt.validation!));
+
+  expect(expression.test('2')).toBe(true);
+});
+
+test("Invalid value doesn't validate after serialization", () => {
+  expect(dtInt.validation).not.toBeUndefined();
+
+  const expression = new RegExp(regexToString(dtInt.validation!));
+
+  expect(expression.test('-2')).toBe(false);
 });
 
 test('Parses valid value', () => {
