@@ -1,7 +1,7 @@
 import { LookupType } from '../LookupType';
 import { Process } from '../Process';
 import { Workspace } from '../Workspace';
-import { IWorkspaceData } from './serializedDataModels';
+import { IWorkspaceData, IValidationExpression } from './serializedDataModels';
 
 export function saveWorkspace(workspace: Workspace): IWorkspaceData {
   return {
@@ -20,7 +20,7 @@ export function saveWorkspace(workspace: Workspace): IWorkspaceData {
             extends: t.extendsType === null ? undefined : t.extendsType.name,
             guidance: t.guidance,
             name: t.name,
-            validation: t.validation === undefined ? undefined : regexToString(t.validation),
+            validation: t.validation === undefined ? undefined : saveRegex(t.validation),
           },
     ),
   };
@@ -53,11 +53,11 @@ function saveProcessDefinition(process: Process) {
   };
 }
 
-export function regexToString(regex: RegExp) {
-    const strRegex = regex.toString();
-
-    const start = 1; // assume regex always starts with a slash
-    const end = strRegex.lastIndexOf('/'); // there may be flags after the last slash, so need to find it
-
-    return strRegex.substring(start, end);
+export function saveRegex(regex: RegExp): IValidationExpression {
+    return {
+        pattern: regex.source,
+        flags: regex.flags === ''
+            ? undefined
+            : regex.flags,
+    }
 }

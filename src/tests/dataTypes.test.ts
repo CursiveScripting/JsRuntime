@@ -1,6 +1,6 @@
 import { FixedType } from '../cursiveruntime/FixedType';
 import { TypedDataType } from '../cursiveruntime/TypedDataType';
-import { regexToString } from '../cursiveruntime/services/saveWorkspace';
+import { saveRegex } from '../cursiveruntime/services/saveWorkspace';
 
 const dtObject = new TypedDataType<object>('object', '#ff0000', false);
 const dtSet = new TypedDataType<Set<object>>('set', '#ff9900', false, dtObject, () => new Set<object>());
@@ -93,7 +93,9 @@ test("Invalid value doesn't validate", () => {
 test('Valid value validates after serialization', () => {
   expect(dtInt.validation).not.toBeUndefined();
   
-  const expression = new RegExp(regexToString(dtInt.validation!));
+  const serialized = saveRegex(dtInt.validation!);
+
+  const expression = new RegExp(serialized.pattern, serialized.flags);
 
   expect(expression.test('2')).toBe(true);
 });
@@ -101,7 +103,9 @@ test('Valid value validates after serialization', () => {
 test("Invalid value doesn't validate after serialization", () => {
   expect(dtInt.validation).not.toBeUndefined();
 
-  const expression = new RegExp(regexToString(dtInt.validation!));
+  const serialized = saveRegex(dtInt.validation!);
+
+  const expression = new RegExp(serialized.pattern, serialized.flags);
 
   expect(expression.test('-2')).toBe(false);
 });
