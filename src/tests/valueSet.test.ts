@@ -1,5 +1,5 @@
-import { FixedType } from '../cursiveruntime/DataType';
-import { TypedParameter } from '../cursiveruntime/Parameter';
+import { FixedType } from '../cursiveruntime/FixedType';
+import { TypedParameter } from '../cursiveruntime/TypedParameter';
 import { ValueSet } from '../cursiveruntime/ValueSet';
 
 const dtInt = new FixedType<number>(

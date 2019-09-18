@@ -1,4 +1,5 @@
-import { TypedDataType, FixedType } from '../cursiveruntime/DataType';
+import { FixedType } from '../cursiveruntime/FixedType';
+import { TypedDataType } from '../cursiveruntime/TypedDataType';
 
 const dtObject = new TypedDataType<object>('object', '#ff0000', false);
 const dtSet = new TypedDataType<Set<object>>('set', '#ff9900', false, dtObject, () => new Set<object>());

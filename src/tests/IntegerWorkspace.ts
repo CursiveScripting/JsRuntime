@@ -1,7 +1,7 @@
 import { Workspace } from '../cursiveruntime/Workspace';
-import { FixedType } from '../cursiveruntime/DataType';
+import { FixedType } from '../cursiveruntime/FixedType';
 import { SystemProcess } from '../cursiveruntime/SystemProcess';
-import { TypedParameter } from '../cursiveruntime/Parameter';
+import { TypedParameter } from '../cursiveruntime/TypedParameter';
 import { ValueSet } from '../cursiveruntime/ValueSet';
 import { RequiredProcess } from '../cursiveruntime/RequiredProcess';
 
