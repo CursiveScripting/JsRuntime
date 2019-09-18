@@ -10,10 +10,10 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
-    "prepublishOnly" : "npm test && npm run lint",
-    "preversion" : "npm run lint",
-    "version" : "npm run format && git add -A src",
-    "postversion" : "git push && git push --tags"
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -24,12 +24,18 @@
   "bugs": {
     "url": "https://github.com/CursiveScripting/JsRuntime/issues"
   },
-  "keywords": ["cursive", "scripting", "runtime"],
+  "keywords": [
+    "cursive",
+    "scripting",
+    "runtime"
+  ],
   "dependencies": {
     "ajv": "^6.10.2",
     "cursive-schema": "git+https://github.com/CursiveScripting/Schema.git"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "jest": "^24.9.0",
