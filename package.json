@@ -30,7 +30,7 @@
     "runtime"
   ],
   "dependencies": {
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "cursive-schema": "git+https://github.com/CursiveScripting/Schema.git"
   },
   "files": [
